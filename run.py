@@ -13,6 +13,7 @@ city.computeRoads()
 city.computeJunctions()
 city.displayCity()
 city.mapRoadsToJunctions()
+city.mapJunctionsToRoads()
 
 server = CentralServer()
 server.findRoadTrafficFlow(city.city_map, city.roads)

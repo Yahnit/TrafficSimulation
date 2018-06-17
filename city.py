@@ -11,6 +11,7 @@ class City:
         self.roads = []
         self.junctions = []
         self.junction_roads = {}
+        self.road_junctions = {}
 
     def makeCity(self):
         self.city_map = [[' ' for x in range(0,self.length)] for y in range(0,self.width)]
@@ -75,6 +76,19 @@ class City:
                     junction_roads[i].append(road_index)
 
         self.junction_roads = junction_roads
+
+    def mapJunctionsToRoads(self):
+        road_junctions = defaultdict(list)
+        roads = self.roads
+        junctions = self.junctions
+        junction_roads = self.junction_roads
+        for i in range(len(roads)):
+            road_junctions[i] = []
+        for junc in junction_roads:
+            for road in junction_roads[junc]:
+                road_junctions[road].append(junc)
+
+        self.road_junctions = road_junctions
 
     def insertRoads(self):
 		for i in range(0,2):
