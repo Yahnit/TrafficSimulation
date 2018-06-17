@@ -6,6 +6,8 @@ class Vehicle:
         self.y = y
         self.source = []
         self.destination = []
+        self.present_road = ""
+        self.present_junction = ""
 
     def moveRight(self,x,y,screen):
         if screen[x][y+1] == " ":
@@ -40,11 +42,11 @@ class Vehicle:
         return False
 
     def isAccomodate(self,x,y,screen):
-        if(screen[x][y] == ' '):
+        if(screen[x][y] != 'X'):
             return True
         return False
 
-    def motion(self,screen):
+    def random_motion(self,screen):
         count = 0
         while count < 10:
             direction = random.randint(1,5)
@@ -64,3 +66,7 @@ class Vehicle:
                 if self.moveLeft(self.x, self.y,screen):
                     break
             count+=1
+
+    def traverseToJunction(self, junction, junctions):
+        x_pos, y_pos = self.x, self.y
+        junc_x, junc_y = junctions[junction][0], junctions[junction][1]

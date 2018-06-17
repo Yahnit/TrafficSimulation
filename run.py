@@ -1,5 +1,6 @@
 from city import City
 from vehicle import Vehicle
+from central_server import CentralServer
 import random, os
 from alarmexception import *
 from getchunix import *
@@ -8,17 +9,24 @@ from colorama import Fore
 city = City()
 city.makeCity()
 city.insertRoads()
+city.computeRoads()
+city.computeJunctions()
 city.displayCity()
+city.mapRoadsToJunctions()
+
+server = CentralServer()
+server.findRoadTrafficFlow(city.city_map, city.roads)
+server.findJunctionTrafficFlow(city.city_map, city.junctions)
 
 getch  = GetchUnix()
 
-MAX_VEHICLES = 30
+MAX_VEHICLES = 80
 vehicles = [' ' for x in range(0,MAX_VEHICLES)]
 num_vehicles = 0
 
 while True:
-    x = random.randint(2,36)
-    y = random.randint(4,72)
+    x = random.randint(2,city.width-2)
+    y = random.randint(4,city.length-4)
     if city.isAccomodate(x,y):
         vehicles[num_vehicles] = Vehicle(x,y)
         city.city_map[x][y] = 'O'
@@ -30,16 +38,14 @@ while True:
 def updateCity():
     os.system('clear')
     city.displayCity()
-    print(Fore.BLACK+"Press q to exit the game")
+    print(Fore.BLACK+"Press q to exit the simulation")
+    print len(city.junctions)
+    print len(city.roads)
 
-def hello():
-    print("Hello")
 
 def alarmHandler(signum, frame):
     raise AlarmException
-'''
-Function which takes input from the user and returns it
-'''
+
 def input_to(timeout=1):
     signal.signal(signal.SIGALRM, alarmHandler)
     signal.alarm(timeout)
@@ -57,9 +63,12 @@ updateCity()
 while True:
     inpt = input_to()
     updateCity()
+    server.findRoadTrafficFlow(city.city_map, city.roads)
+    server.findJunctionTrafficFlow(city.city_map, city.junctions)
+
 
     for vhcl in range(MAX_VEHICLES):
-        vehicles[vhcl].motion(city.city_map)
+        vehicles[vhcl].random_motion(city.city_map)
 
     if(inpt == 'q' or inpt == 'Q'):
         exit()
