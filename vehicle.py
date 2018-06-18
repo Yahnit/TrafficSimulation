@@ -74,7 +74,7 @@ class Vehicle:
                     break
             count+=1
 
-    def traverseToJunction(self, junctions, junction, city_map):
+    def atraverseToJunction(self, junctions, junction, city_map):
         x_pos, y_pos = self.x, self.y
         junc_x, junc_y = junctions[junction][0], junctions[junction][1]
 
@@ -109,3 +109,59 @@ class Vehicle:
                 self.moveUp(x_pos, y_pos,city_map)
             elif x_pos == junc_x or x_pos == junc_x +1:
                 self.stayStill(x_pos, y_pos,city_map)
+
+    def traverseToJunction(self, junctions, junction, city_map):
+        x_pos, y_pos = self.x, self.y
+        junc_x, junc_y = junctions[junction][0], junctions[junction][1]
+
+        if x_pos == junc_x:
+            if y_pos < junc_y:
+                self.moveRight(x_pos, y_pos,city_map)
+            elif y_pos > junc_y+1:
+                self.moveLeft(x_pos, y_pos,city_map)
+            elif y_pos == junc_y or y_pos == junc_y+1:
+                self.stayStill(x_pos, y_pos,city_map)
+            return
+
+        if y_pos == junc_y:
+            if x_pos < junc_x:
+                self.moveDown(x_pos, y_pos,city_map)
+            elif x_pos > junc_x+1:
+                self.moveUp(x_pos, y_pos,city_map)
+            elif x_pos == junc_x or x_pos == junc_x +1:
+                self.stayStill(x_pos, y_pos,city_map)
+            return
+
+        if x_pos-1 == junc_x:
+            if y_pos < junc_y:
+                self.moveRight(x_pos, y_pos,city_map)
+            elif y_pos > junc_y+1:
+                self.moveLeft(x_pos, y_pos,city_map)
+            elif y_pos == junc_y or y_pos == junc_y+1:
+                self.stayStill(x_pos, y_pos,city_map)
+            return
+
+        if y_pos-1 == junc_y:
+            if x_pos < junc_x:
+                self.moveDown(x_pos, y_pos,city_map)
+            elif x_pos > junc_x+1:
+                self.moveUp(x_pos, y_pos,city_map)
+            elif x_pos == junc_x or x_pos == junc_x +1:
+                self.stayStill(x_pos, y_pos,city_map)
+            return
+
+        if x_pos < junc_x:
+            if self.moveDown(x_pos, y_pos,city_map):
+                return
+
+        if x_pos > junc_x:
+            if self.moveUp(x_pos, y_pos,city_map):
+                return
+
+        if y_pos < junc_y:
+            if self.moveRight(x_pos, y_pos,city_map):
+                return
+
+        if y_pos > junc_y:
+            if self.moveLeft(x_pos, y_pos,city_map):
+                return
