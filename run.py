@@ -24,6 +24,7 @@ getch  = GetchUnix()
 MAX_VEHICLES = 80
 vehicles = [' ' for x in range(0,MAX_VEHICLES)]
 num_vehicles = 0
+time = 0
 
 while True:
     x = random.randint(2,city.width-2)
@@ -40,8 +41,7 @@ def updateCity():
     os.system('clear')
     city.displayCity()
     print(Fore.BLACK+"Press q to exit the simulation")
-    print len(city.junctions)
-    print len(city.roads)
+    print ("Timestamp: "+ str(time))
 
 
 def alarmHandler(signum, frame):
@@ -62,6 +62,7 @@ def input_to(timeout=1):
 updateCity()
 
 while True:
+    time += 1
     inpt = input_to()
     updateCity()
     server.findRoadTrafficFlow(city.city_map, city.roads)
@@ -70,7 +71,7 @@ while True:
 
     for vhcl in range(MAX_VEHICLES):
         #vehicles[vhcl].random_motion(city.city_map)
-        vehicles[vhcl].traverseToJunction(city.junctions,96,city.city_map)
+        vehicles[vhcl].traverseToJunction(city.junctions,96,city.city_map, vhcl)
 
     if(inpt == 'q' or inpt == 'Q'):
         exit()
