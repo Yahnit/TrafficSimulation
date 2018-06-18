@@ -69,7 +69,8 @@ while True:
 
 
     for vhcl in range(MAX_VEHICLES):
-        vehicles[vhcl].random_motion(city.city_map)
+        #vehicles[vhcl].random_motion(city.city_map)
+        vehicles[vhcl].traverseToJunction(city.junctions,96,city.city_map)
 
     if(inpt == 'q' or inpt == 'Q'):
         exit()

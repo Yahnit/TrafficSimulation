@@ -4,8 +4,8 @@ class CentralServer:
     def __init__(self):
         self.name = "Central Server"
         self.id = "srvr735"
-        self.traffic_flow = ""
-        self.junction_flow = ""
+        self.traffic_flow = {}
+        self.junction_flow = {}
 
     def findRoadTrafficFlow(self, screen, roads):
         traffic_flow = defaultdict(list)

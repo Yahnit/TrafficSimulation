@@ -10,7 +10,7 @@ class Vehicle:
         self.present_junction = ""
 
     def moveRight(self,x,y,screen):
-        if screen[x][y+1] == " ":
+        if screen[x][y+1] != "X":
             screen[x][y] = " "
             screen[x][y+1] = 'O'
             self.x, self.y = x ,y+1
@@ -18,7 +18,7 @@ class Vehicle:
         return False
 
     def moveLeft(self,x,y,screen):
-        if screen[x][y-1] == " ":
+        if screen[x][y-1] != "X":
             screen[x][y] = " "
             screen[x][y-1] = 'O'
             self.x, self.y = x ,y-1
@@ -26,7 +26,7 @@ class Vehicle:
         return False
 
     def moveUp(self,x,y,screen):
-        if screen[x-1][y] == " ":
+        if screen[x-1][y] != "X":
             screen[x][y] = " "
             screen[x-1][y] = 'O'
             self.x, self.y = x-1 ,y
@@ -34,10 +34,17 @@ class Vehicle:
         return False
 
     def moveDown(self,x,y,screen):
-        if screen[x+1][y] == " ":
+        if screen[x+1][y] != "X":
             screen[x][y] = " "
             screen[x+1][y] = 'O'
             self.x, self.y = x+1 ,y
+            return True
+        return False
+
+    def stayStill(self,x,y,screen):
+        if screen[x][y] != "X":
+            screen[x][y] = 'O'
+            self.x, self.y = x ,y
             return True
         return False
 
@@ -74,23 +81,31 @@ class Vehicle:
         if x_pos == junc_x:
             if y_pos < junc_y:
                 self.moveRight(x_pos, y_pos,city_map)
-            else:
+            elif y_pos > junc_y+1:
                 self.moveLeft(x_pos, y_pos,city_map)
+            elif y_pos == junc_y or y_pos == junc_y+1:
+                self.stayStill(x_pos, y_pos,city_map)
 
         if y_pos == junc_y:
             if x_pos < junc_x:
                 self.moveDown(x_pos, y_pos,city_map)
-            else:
+            elif x_pos > junc_x+1:
                 self.moveUp(x_pos, y_pos,city_map)
+            elif x_pos == junc_x or x_pos == junc_x +1:
+                self.stayStill(x_pos, y_pos,city_map)
 
         if x_pos-1 == junc_x:
             if y_pos < junc_y:
                 self.moveRight(x_pos, y_pos,city_map)
-            else:
+            elif y_pos > junc_y+1:
                 self.moveLeft(x_pos, y_pos,city_map)
+            elif y_pos == junc_y or y_pos == junc_y+1:
+                self.stayStill(x_pos, y_pos,city_map)
 
         if y_pos-1 == junc_y:
             if x_pos < junc_x:
                 self.moveDown(x_pos, y_pos,city_map)
-            else:
+            elif x_pos > junc_x+1:
                 self.moveUp(x_pos, y_pos,city_map)
+            elif x_pos == junc_x or x_pos == junc_x +1:
+                self.stayStill(x_pos, y_pos,city_map)
