@@ -12,6 +12,7 @@ class City:
         self.junctions = []
         self.junction_roads = {}
         self.road_junctions = {}
+        self.timer = 0
 
     def makeCity(self):
         self.city_map = [[' ' for x in range(0,self.length)] for y in range(0,self.width)]

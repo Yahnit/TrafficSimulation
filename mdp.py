@@ -10,25 +10,15 @@ def print_utilities(utils):
 def get_actions(state):
     if state in end_states or state in walls:
         return []
-    return [(1,0), (0,1), (-1,0), (0,-1)]
+    return [(4,0), (0,8), (-4,0), (0,-8)]
 
 def transition(state,action):
     if (state[0]+action[0],state[1]+action[1]) not in walls:
-        more_prob = (0.8, (state[0]+action[0],state[1]+action[1]))
+        more_prob = (1, (state[0]+action[0],state[1]+action[1]))
     else:
-        more_prob = (0.8, (state[0],state[1]))
+        more_prob = (1, (state[0],state[1]))
 
-    if (state[0]+action[1],state[1]+action[0]) not in walls:
-        less_prob1 = (0.1, (state[0]+action[1],state[1]+action[0]))
-    else:
-        less_prob1 = (0.1, (state[0],state[1]))
-
-    if (state[0]-action[1],state[1]-action[0]) not in walls:
-        less_prob2 = (0.1, (state[0]-action[1],state[1]-action[0]))
-    else:
-        less_prob2 = (0.1, (state[0],state[1]))
-
-    return (more_prob, less_prob1, less_prob2)
+    return more_prob
 
 def value_iteration():
     utilities = {}
@@ -58,8 +48,7 @@ def value_iteration():
                 for action in get_actions(state):
                     trans = transition(state,action)
                     sum_ut = 0.0
-                    for k in range(len(trans)):
-                        sum_ut += trans[k][0] * temp_utilities[trans[k][1]]
+                    sum_ut += trans[0] * temp_utilities[trans[1]]
                     if maxm < sum_ut:
                         maxm = sum_ut
 

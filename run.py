@@ -15,16 +15,17 @@ city.displayCity()
 city.mapRoadsToJunctions()
 city.mapJunctionsToRoads()
 
-server = CentralServer()
-server.findRoadTrafficFlow(city.city_map, city.roads)
-server.findJunctionTrafficFlow(city.city_map, city.junctions)
-
 getch  = GetchUnix()
 
 MAX_VEHICLES = 80
 vehicles = [' ' for x in range(0,MAX_VEHICLES)]
 num_vehicles = 0
-time = 0
+
+server = CentralServer()
+server.initializeVehiclesPath(MAX_VEHICLES)
+server.findRoadTrafficFlow(city.city_map, city.roads)
+server.findJunctionTrafficFlow(city.city_map, city.junctions)
+
 
 while True:
     x = random.randint(2,city.width-2)
@@ -41,8 +42,7 @@ def updateCity():
     os.system('clear')
     city.displayCity()
     print(Fore.BLACK+"Press q to exit the simulation")
-    print ("Timestamp: "+ str(time))
-
+    print ("Timestamp: "+ str(city.timer))
 
 def alarmHandler(signum, frame):
     raise AlarmException
@@ -62,7 +62,7 @@ def input_to(timeout=1):
 updateCity()
 
 while True:
-    time += 1
+    city.timer += 1
     inpt = input_to()
     updateCity()
     server.findRoadTrafficFlow(city.city_map, city.roads)
@@ -71,7 +71,8 @@ while True:
 
     for vhcl in range(MAX_VEHICLES):
         #vehicles[vhcl].random_motion(city.city_map)
-        vehicles[vhcl].traverseToJunction(city.junctions,96,city.city_map, vhcl)
+        vehicles[vhcl].traverseToJunctionShortestPath(city.junctions,96,city.city_map, vhcl)
+        server.vehicles_path[vhcl].append([vehicles[vhcl].x,vehicles[vhcl].y])
 
     if(inpt == 'q' or inpt == 'Q'):
         exit()

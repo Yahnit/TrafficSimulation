@@ -6,6 +6,7 @@ class CentralServer:
         self.id = "srvr735"
         self.traffic_flow = {}
         self.junction_flow = {}
+        self.vehicles_path = {}
 
     def findRoadTrafficFlow(self, screen, roads):
         traffic_flow = defaultdict(list)
@@ -36,3 +37,7 @@ class CentralServer:
             junction_flow[junction] = num_vehicles
 
         self.junction_flow = junction_flow
+
+    def initializeVehiclesPath(self, num_vehicles):
+        for i in range(num_vehicles):
+            self.vehicles_path[i] = []
