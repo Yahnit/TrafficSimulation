@@ -10,8 +10,35 @@ class Vehicle:
         self.destination = []
         self.present_road = ""
         self.present_junction = ""
-        self.reached_junction = False
+        self.next_junction = ""
+        self.reached_junction = True
         self.path_travelled = []
+        self.grid = [[ -0.2 for x in range(0,20)] for y in range(0,11)]
+        self.utilities = {}
+        self.initial_utilities = {}
+        self.states = []
+
+    def initialize(self,n,m):
+        utilities = {}
+        states = []
+        for i in range(n):
+            for j in range(m):
+                temp = (i,j)
+                states.append(temp)
+                utilities[temp] = 0
+
+        for i in range(max(m,n)):
+            temp = (i,-1)
+            utilities[temp] = 0
+            temp = (n,i)
+            utilities[temp] = 0
+            temp = (-1,i)
+            utilities[temp] = 0
+            temp = (i,m)
+            utilities[temp] = 0
+        self.initial_utilities = utilities
+        self.states = states
+
 
     def moveRight(self,x,y,screen):
         if screen[x][y+1] != "X":
@@ -80,7 +107,7 @@ class Vehicle:
 
     def traverseToJunctionVI(self, junctions, junction, city_map):
         x_pos, y_pos = self.x, self.y
-        junc_x, junc_y = junctions[junction][0], junctions[junction][1]
+        junc_x, junc_y = junction[0]*4+2, junction[1]*8+4
 
         if x_pos == junc_x:
             if y_pos < junc_y:
@@ -92,6 +119,7 @@ class Vehicle:
             elif y_pos == junc_y or y_pos == junc_y+1:
                 self.stayStill(x_pos, y_pos,city_map)
                 self.reached_junction = True
+                self.present_junction = (x_pos/4, y_pos/8)
 
         if y_pos == junc_y:
             if x_pos < junc_x:
@@ -103,6 +131,7 @@ class Vehicle:
             elif x_pos == junc_x or x_pos == junc_x +1:
                 self.stayStill(x_pos, y_pos,city_map)
                 self.reached_junction = True
+                self.present_junction = (x_pos/4, y_pos/8)
 
         if x_pos-1 == junc_x:
             if y_pos < junc_y:
@@ -114,6 +143,7 @@ class Vehicle:
             elif y_pos == junc_y or y_pos == junc_y+1:
                 self.stayStill(x_pos, y_pos,city_map)
                 self.reached_junction = True
+                self.present_junction = (x_pos/4, y_pos/8)
 
         if y_pos-1 == junc_y:
             if x_pos < junc_x:
@@ -125,6 +155,7 @@ class Vehicle:
             elif x_pos == junc_x or x_pos == junc_x +1:
                 self.stayStill(x_pos, y_pos,city_map)
                 self.reached_junction = True
+                self.present_junction = (x_pos/4, y_pos/8)
 
         self.path_travelled.append([self.x, self.y])
 
@@ -233,65 +264,80 @@ class Vehicle:
                     self.path_travelled.append([self.x, self.y])
                     return
 
-    def print_utilities(utils):
+    def print_utilities(self, utils, n, m):
         for i in range(n):
             for j in range(m):
                 print ("%.3f" %utils[(i,j)], end=" ")
             print ("\n")
 
-    def get_actions(state):
-        if state in end_states or state in walls:
+    def get_actions(self, state, borders):
+        if state in self.destination or state in borders:
             return []
-        return [(4,0), (0,8), (-4,0), (0,-8)]
+        return [(1,0), (0,1), (-1,0), (0,-1)]
 
-    def transition(state,action):
-        if (state[0]+action[0],state[1]+action[1]) not in walls:
+    def transition(self, state,action,borders):
+        if (state[0]+action[0],state[1]+action[1]) not in borders:
             more_prob = (1, (state[0]+action[0],state[1]+action[1]))
         else:
             more_prob = (1, (state[0],state[1]))
 
         return more_prob
 
-    def value_iteration():
-        utilities = {}
-        states = []
-        for i in range(n):
-            for j in range(m):
-                temp = (i,j)
-                states.append(temp)
-                utilities[temp] = 0
+    def find_max_utility_state(self,utilities,present_junction):
+        max_vals = []
+        maxm = -100000
+        if(utilities[(present_junction[0]-1, present_junction[1])] > maxm):
+            maxm = utilities[(present_junction[0]-1, present_junction[1])]
+        if(utilities[(present_junction[0]+1, present_junction[1])] > maxm):
+            maxm = utilities[(present_junction[0]+1, present_junction[1])]
+        if(utilities[(present_junction[0], present_junction[1]-1)] > maxm):
+            maxm = utilities[(present_junction[0], present_junction[1]-1)]
+        if(utilities[(present_junction[0], present_junction[1]+1)] > maxm):
+            maxm = utilities[(present_junction[0], present_junction[1]+1)]
 
-        for i in range(max(m,n)):
-            temp = (i,-1)
-            utilities[temp] = 0
-            temp = (n,i)
-            utilities[temp] = 0
-            temp = (-1,i)
-            utilities[temp] = 0
-            temp = (i,m)
-            utilities[temp] = 0
+        if utilities[(present_junction[0]-1, present_junction[1])] == maxm:
+            max_vals.append((present_junction[0]-1, present_junction[1]))
+        if utilities[(present_junction[0]+1, present_junction[1])] == maxm:
+            max_vals.append((present_junction[0]+1, present_junction[1]))
+        if utilities[(present_junction[0], present_junction[1]-1)] == maxm:
+            max_vals.append((present_junction[0], present_junction[1]-1))
+        if utilities[(present_junction[0], present_junction[1]+1)] == maxm:
+            max_vals.append((present_junction[0], present_junction[1]+1))
+
+        if utilities[max_vals[0]] < utilities[(present_junction[0], present_junction[1])]:
+            return present_junction
+
+        return max_vals[random.randint(0,len(max_vals)-1)]
+
+    def value_iteration(self, n, m, borders):
+        grid = self.grid
+        grid[5][10] = 10
+        self.destination = [(5,10)]
+        utilities = self.initial_utilities
+        states = self.states
 
         while 1:
             is_change = 0
             temp_utilities = deepcopy(utilities)
             for state in states:
                 maxm = -100000.0
-                if get_actions(state) != []:
-                    for action in get_actions(state):
-                        trans = transition(state,action)
+                if self.get_actions(state, borders) != []:
+                    for action in self.get_actions(state, borders):
+                        trans = self.transition(state,action,borders)
                         sum_ut = 0.0
                         sum_ut += trans[0] * temp_utilities[trans[1]]
                         if maxm < sum_ut:
                             maxm = sum_ut
 
-                if get_actions(state) == []:
+                if self.get_actions(state, borders) == []:
                     maxm = 0
 
                 utilities[state] = grid[state[0]][state[1]] + maxm
-                if abs(utilities[state] - temp_utilities[state]) > abs(0.01*utilities[state]):
+                if abs(utilities[state] - temp_utilities[state]) > abs(0.1*utilities[state]):
                     is_change = 1
 
-            print_utilities(utilities)
-            print("\n")
             if not is_change:
-                return utilities
+                best_move = self.find_max_utility_state(utilities, self.present_junction)
+                self.next_junction = best_move
+                self.utilities = utilities
+                return best_move

@@ -10,7 +10,7 @@ def print_utilities(utils):
 def get_actions(state):
     if state in end_states or state in walls:
         return []
-    return [(4,0), (0,8), (-4,0), (0,-8)]
+    return [(1,0), (0,1), (-1,0), (0,-1)]
 
 def transition(state,action):
     if (state[0]+action[0],state[1]+action[1]) not in walls:

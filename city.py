@@ -7,15 +7,37 @@ class City:
     def __init__(self):
         self.length = 164
         self.width = 46
+        self.junc_len = self.length/8
+        self.junc_wid = self.width/4
         self.city_map = ""
         self.roads = []
         self.junctions = []
+        self.TwoDJunctions = {}
         self.junction_roads = {}
         self.road_junctions = {}
         self.timer = 0
+        self.borders = []
 
     def makeCity(self):
         self.city_map = [[' ' for x in range(0,self.length)] for y in range(0,self.width)]
+        borders = []
+        n = self.width/4
+        m = self.length/8
+        for i in range(n):
+            borders.append((i,-1))
+            borders.append((i,m))
+        for i in range(m):
+            borders.append((-1,i))
+            borders.append((n,i))
+
+        self.borders = borders
+        self.insertRoads()
+        self.computeRoads()
+        self.computeJunctions()
+        self.displayCity()
+        self.mapRoadsToJunctions()
+        self.mapJunctionsToRoads()
+        self.map1Dto2DJunctions()
 
     def isAccomodate(self,x,y):
         if(self.city_map[x][y] == ' '):
@@ -41,6 +63,16 @@ class City:
                 junctions.append([i,j])
 
         self.junctions = junctions
+
+    def map1Dto2DJunctions(self):
+        mapping = {}
+        factor = self.length/8
+        junctions = self.junctions
+        for junc in range(len(junctions)):
+            junction = (junc/factor, junc%factor)
+            mapping[junction] = junc
+
+        self.TwoDJunctions = mapping
 
     def findIndexOfRoad(self,road):
         for i in range(len(self.roads)):
