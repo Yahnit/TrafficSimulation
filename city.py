@@ -124,27 +124,32 @@ class City:
         self.road_junctions = road_junctions
 
     def insertRoads(self):
-		for i in range(0,2):
-			for j in range(0,self.length):
-				self.city_map[i][j] = 'X'
+    	for i in range(0,2):
+    		for j in range(0,self.length):
+    			self.city_map[i][j] = 'X'
 
-		for i in range(2,self.width-2):
-			for j in range(0,4):
-				self.city_map[i][j] = 'X'
+    	for i in range(2,self.width-2):
+    		for j in range(0,4):
+    			self.city_map[i][j] = 'X'
 
-		for i in range(2,self.width-2):
-			for j in range(self.length-4,self.length):
-				self.city_map[i][j] = 'X'
+    	for i in range(2,self.width-2):
+    		for j in range(self.length-4,self.length):
+    			self.city_map[i][j] = 'X'
 
-		for i in range(self.width-2,self.width):
-			for j in range(0,self.length):
-				self.city_map[i][j] = 'X'
+    	for i in range(self.width-2,self.width):
+    		for j in range(0,self.length):
+    			self.city_map[i][j] = 'X'
 
-		for i in range(2,self.width-2):
-			if i%4==1 or i%4==0:
-				for j in range(4,self.length-6):
-					if j%8==3 or j%8==2 or j%8==1 or j%8==0 or j%8==7 or j%8==6:
-						self.city_map[i][j] = 'X'
+        for i in range(2,self.width-2):
+            if i%4==1 or i%4==0:
+                for j in range(4,self.length-6):
+                    if j%8==3 or j%8==2 or j%8==1 or j%8==0 or j%8==7 or j%8==6:
+                        self.city_map[i][j] = 'X'
+
+        self.city_map[22][84] = "D"
+        for i in range(22,24):
+            for j in range(84,86):
+                self.city_map[i][j] = 'D'
 
     def displayCity(self):
         for i in range(0,self.width):
@@ -153,6 +158,8 @@ class City:
                     print(Fore.YELLOW+self.city_map[i][j],end='')
                 elif self.city_map[i][j] == 'O':
                     print(Fore.MAGENTA+self.city_map[i][j],end='')
+                elif self.city_map[i][j] == 'D':
+                    print(Fore.GREEN+self.city_map[i][j],end='')
                 else:
                     print(Fore.CYAN+self.city_map[i][j],end='')
             print()

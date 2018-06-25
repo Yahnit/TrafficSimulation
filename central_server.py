@@ -13,7 +13,7 @@ class CentralServer:
         self.traffic_flow = {}
         self.junction_flow = {}
         self.vehicles_path = {}
-        self.MAX_VEHICLES = 10
+        self.MAX_VEHICLES = 20
         self.timer = 0
 
     def startSimulation(self):
@@ -45,8 +45,9 @@ class CentralServer:
             x_pos = x*4 + 2
             y_pos = y*8 + 4
             if self.city.isAccomodate(x_pos,y_pos):
-                self.vehicles[num_vehicles] = Vehicle(x_pos,y_pos)
+                self.vehicles[num_vehicles] = Vehicle(x_pos,y_pos,self.city)
                 self.vehicles[num_vehicles].initialize(self.city.junc_wid, self.city.junc_len)
+                self.vehicles[num_vehicles].speed = num_vehicles%2
                 self.vehicles[num_vehicles].present_junction = (x,y)
                 self.city.city_map[x_pos][y_pos] = 'O'
                 num_vehicles += 1

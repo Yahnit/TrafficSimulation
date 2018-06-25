@@ -3,7 +3,7 @@ import random
 from copy import deepcopy
 
 class Vehicle:
-    def __init__(self,x,y):
+    def __init__(self,x,y,city):
         self.x = x
         self.y = y
         self.source = []
@@ -13,10 +13,11 @@ class Vehicle:
         self.next_junction = ""
         self.reached_junction = True
         self.path_travelled = []
-        self.grid = [[ -0.2 for x in range(0,20)] for y in range(0,11)]
+        self.grid = [[ -0.2 for x in range(0,city.junc_len)] for y in range(0,city.junc_wid)]
         self.utilities = {}
         self.initial_utilities = {}
         self.states = []
+        self.speed = 0
 
     def initialize(self,n,m):
         utilities = {}
@@ -39,38 +40,101 @@ class Vehicle:
         self.initial_utilities = utilities
         self.states = states
 
-
     def moveRight(self,x,y,screen):
-        if screen[x][y+1] != "X":
+        for j in range(1,self.speed+2):
+            is_move = 1
+            for i in range(1,self.speed+2-j+1 ):
+                if not (screen[x][y+i] == " " or screen[x][y+i] == "D"):
+                    is_move = 0
+            if is_move == 1:
+                break
+
+        if is_move == 1:
             screen[x][y] = " "
-            screen[x][y+1] = 'O'
-            self.x, self.y = x ,y+1
+            screen[x][y+self.speed+2-j] = 'O'
+            self.x, self.y = x ,y+self.speed+2-j
             return True
         return False
 
     def moveLeft(self,x,y,screen):
-        if screen[x][y-1] != "X":
+        for j in range(1,self.speed+2):
+            is_move = 1
+            for i in range(1,self.speed+2-j+1 ):
+                if not (screen[x][y-i] == " " or screen[x][y-i] == "D"):
+                    is_move = 0
+            if is_move == 1:
+                break
+
+        if is_move == 1:
             screen[x][y] = " "
-            screen[x][y-1] = 'O'
-            self.x, self.y = x ,y-1
+            screen[x][y-self.speed-2+j] = 'O'
+            self.x, self.y = x ,y-self.speed-2+j
             return True
         return False
 
     def moveUp(self,x,y,screen):
-        if screen[x-1][y] != "X":
+        for j in range(1,self.speed+2):
+            is_move = 1
+            for i in range(1,self.speed+2-j+1 ):
+                if not (screen[x-i][y] == " " or screen[x-i][y] == "D"):
+                    is_move = 0
+            if is_move == 1:
+                break
+
+        if is_move == 1:
             screen[x][y] = " "
-            screen[x-1][y] = 'O'
-            self.x, self.y = x-1 ,y
+            screen[x-self.speed-2+j][y] = 'O'
+            self.x, self.y = x-self.speed-2+j ,y
+            return True
+
+    def moveDown(self,x,y,screen):
+        for j in range(1,self.speed+2):
+            is_move = 1
+            for i in range(1,self.speed+2-j+1 ):
+                if not (screen[x+i][y] == " " or screen[x+i][y] == "D"):
+                    is_move = 0
+            if is_move == 1:
+                break
+
+        if is_move == 1:
+            screen[x][y] = " "
+            screen[x+self.speed+2-j][y] = 'O'
+            self.x, self.y = x +self.speed+2-j,y
             return True
         return False
 
-    def moveDown(self,x,y,screen):
-        if screen[x+1][y] != "X":
-            screen[x][y] = " "
-            screen[x+1][y] = 'O'
-            self.x, self.y = x+1 ,y
-            return True
-        return False
+
+    # def moveRight(self,x,y,screen):
+    #     if screen[x][y+1] == " " or screen[x][y+1] == "D":
+    #         screen[x][y] = " "
+    #         screen[x][y+1] = 'O'
+    #         self.x, self.y = x ,y+1
+    #         return True
+    #     return False
+    #
+    # def moveLeft(self,x,y,screen):
+    #     if screen[x][y-1] == " " or screen[x][y-1] == "D":
+    #         screen[x][y] = " "
+    #         screen[x][y-1] = 'O'
+    #         self.x, self.y = x ,y-1
+    #         return True
+    #     return False
+    #
+    # def moveUp(self,x,y,screen):
+    #     if screen[x-1][y] == " " or screen[x-1][y] == "D":
+    #         screen[x][y] = " "
+    #         screen[x-1][y] = 'O'
+    #         self.x, self.y = x-1 ,y
+    #         return True
+    #     return False
+    #
+    # def moveDown(self,x,y,screen):
+    #     if screen[x+1][y] == " " or screen[x+1][y] == "D":
+    #         screen[x][y] = " "
+    #         screen[x+1][y] = 'O'
+    #         self.x, self.y = x+1 ,y
+    #         return True
+    #     return False
 
     def stayStill(self,x,y,screen):
         if screen[x][y] != "X":
