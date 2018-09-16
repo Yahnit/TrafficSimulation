@@ -5,6 +5,7 @@ from alarmexception import *
 from getchunix import *
 from colorama import Fore
 from collections import defaultdict
+import time
 
 class CentralServer:
     def __init__(self):
@@ -13,7 +14,7 @@ class CentralServer:
         self.traffic_flow = {}
         self.junction_flow = {}
         self.vehicles_path = {}
-        self.MAX_VEHICLES = 50
+        self.MAX_VEHICLES = 70
         self.timer = 0
 
     def startSimulation(self):
@@ -60,10 +61,10 @@ class CentralServer:
             inpt = self.input_to()
             self.updateCity()
             self.findRoadTrafficFlow(self.city.city_map, self.city.roads)
-            self.findJunctionTrafficFlow(self.city.city_map, self.city.junctions)
+            # self.findJunctionTrafficFlow(self.city.city_map, self.city.junctions)
 
             for vhcl in range(self.MAX_VEHICLES):
-                self.vehicles_path[vhcl].append([self.vehicles[vhcl].x,self.vehicles[vhcl].y])
+                # self.vehicles_path[vhcl].append([self.vehicles[vhcl].x,self.vehicles[vhcl].y])
                 if self.vehicles[vhcl].reached_junction:
                     self.vehicles[vhcl].value_iteration(self.city.junc_wid,self.city.junc_len,self.city.borders, self.traffic_flow, self.city.TwoDJunctions, self.city.junction_roads)
                 self.vehicles[vhcl].traverseToJunctionVI(self.city.junctions,self.vehicles[vhcl].next_junction ,self.city.city_map)
@@ -71,6 +72,11 @@ class CentralServer:
             # print self.traffic_flow
             if(inpt == 'q' or inpt == 'Q'):
                 exit()
+
+            if(inpt == 'x'):
+                self.vehicles[0].print_utilities(self.vehicles[0].utilities,self.city.width/4,self.city.length/8)
+                time.sleep(3)
+
 
     def findRoadTrafficFlow(self, screen, roads):
         traffic_flow = defaultdict(list)

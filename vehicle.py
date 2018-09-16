@@ -8,7 +8,7 @@ class Vehicle:
         self.x = x
         self.y = y
         self.source = []
-        self.destination = [(5,10)]
+        self.destination = [(1,2)]
         self.present_road = ""
         self.present_junction = ""
         self.next_junction = ""
@@ -400,8 +400,10 @@ class Vehicle:
     def print_utilities(self, utils, n, m):
         for i in range(n):
             for j in range(m):
-                print ("%1f" %utils[(i,j)], end=" ")
+                print(utils[(i,j)], end=" ")
+                # print ("%3f" %utils[(i,j)], end=" ")
             print ("\n")
+        print("\n")
 
     def get_actions(self, state, borders):
         actions = []
@@ -433,26 +435,27 @@ class Vehicle:
         pres_roads = junction_roads[pres_junc]
         dest_roads = junction_roads[dest_junc]
         common_road = []
+
         for road in pres_roads:
             if road in dest_roads:
                 common_road.append(road)
 
         if traffic_flow[common_road[0]]==0:
             return -0.2
-        if traffic_flow[common_road[0]]==1:
-            return -0.5
-        if traffic_flow[common_road[0]]==2:
-            return -0.6
-        if traffic_flow[common_road[0]]==3:
-            return -0.8
-        if traffic_flow[common_road[0]]==4:
-            return -0.9
+        # if traffic_flow[common_road[0]]==1:
+        #     return -0.5
+        # if traffic_flow[common_road[0]]==2:
+        #     return -0.6
+        # if traffic_flow[common_road[0]]==3:
+        #     return -0.8
+        # if traffic_flow[common_road[0]]==4:
+        #     return -0.9
         else:
-            return -0.2*traffic_flow[common_road[0]]
+            return -0.4*traffic_flow[common_road[0]]
 
     def value_iteration(self, n, m, borders, traffic_flow, twoDJunctions, junction_roads):
         grid = self.grid
-        grid[self.destination[0][0]][self.destination[0][1]] = 100
+        grid[self.destination[0][0]][self.destination[0][1]] = 4
         utilities = self.initial_utilities
         states = self.states
 
@@ -480,10 +483,11 @@ class Vehicle:
             if not is_change:
                 for i in range(n):
                     for j in range(m):
-                        utilities[(i,j)] = round(utilities[(i,j)],1)
+                        utilities[(i,j)] = round(utilities[(i,j)],3)
                 best_move = self.find_max_utility_state(utilities, self.present_junction)
                 self.next_junction = best_move
                 self.utilities = utilities
-                # self.print_utilities(utilities, 11, 20)
+                # print(utilities)
+                # self.print_utilities(utilities, 3, 5)
                 # exit()
                 return best_move
