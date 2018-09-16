@@ -1,25 +1,27 @@
 from __future__ import print_function
 import random
 from copy import deepcopy
+import decimal
 
 class Vehicle:
     def __init__(self,x,y,city):
         self.x = x
         self.y = y
         self.source = []
-        self.destination = []
+        self.destination = [(5,10)]
         self.present_road = ""
         self.present_junction = ""
         self.next_junction = ""
         self.reached_junction = True
         self.path_travelled = []
-        self.grid = [[ -0.2 for x in range(0,city.junc_len)] for y in range(0,city.junc_wid)]
+        self.grid = [[ 0 for x in range(0,city.junc_len)] for y in range(0,city.junc_wid)]
+        self.distanceFromDestination = [[ 0 for x in range(0,city.junc_len)] for y in range(0,city.junc_wid)]
         self.utilities = {}
         self.initial_utilities = {}
         self.states = []
         self.speed = 0
 
-    def initialize(self,n,m):
+    def initialize(self,n, m):
         utilities = {}
         states = []
         for i in range(n):
@@ -27,6 +29,7 @@ class Vehicle:
                 temp = (i,j)
                 states.append(temp)
                 utilities[temp] = 0
+                self.distanceFromDestination[i][j] = abs(self.destination[0][0]-i)*4 + abs(self.destination[0][1]-j)*8
 
         for i in range(max(m,n)):
             temp = (i,-1)
@@ -40,68 +43,69 @@ class Vehicle:
         self.initial_utilities = utilities
         self.states = states
 
-    def moveRight(self,x,y,screen):
-        for j in range(1,self.speed+2):
-            is_move = 1
-            for i in range(1,self.speed+2-j+1 ):
-                if not (screen[x][y+i] == " " or screen[x][y+i] == "D"):
-                    is_move = 0
-            if is_move == 1:
-                break
 
-        if is_move == 1:
-            screen[x][y] = " "
-            screen[x][y+self.speed+2-j] = 'O'
-            self.x, self.y = x ,y+self.speed+2-j
-            return True
-        return False
-
-    def moveLeft(self,x,y,screen):
-        for j in range(1,self.speed+2):
-            is_move = 1
-            for i in range(1,self.speed+2-j+1 ):
-                if not (screen[x][y-i] == " " or screen[x][y-i] == "D"):
-                    is_move = 0
-            if is_move == 1:
-                break
-
-        if is_move == 1:
-            screen[x][y] = " "
-            screen[x][y-self.speed-2+j] = 'O'
-            self.x, self.y = x ,y-self.speed-2+j
-            return True
-        return False
-
-    def moveUp(self,x,y,screen):
-        for j in range(1,self.speed+2):
-            is_move = 1
-            for i in range(1,self.speed+2-j+1 ):
-                if not (screen[x-i][y] == " " or screen[x-i][y] == "D"):
-                    is_move = 0
-            if is_move == 1:
-                break
-
-        if is_move == 1:
-            screen[x][y] = " "
-            screen[x-self.speed-2+j][y] = 'O'
-            self.x, self.y = x-self.speed-2+j ,y
-            return True
-
-    def moveDown(self,x,y,screen):
-        for j in range(1,self.speed+2):
-            is_move = 1
-            for i in range(1,self.speed+2-j+1 ):
-                if not (screen[x+i][y] == " " or screen[x+i][y] == "D"):
-                    is_move = 0
-            if is_move == 1:
-                break
-
-        if is_move == 1:
-            screen[x][y] = " "
-            screen[x+self.speed+2-j][y] = 'O'
-            self.x, self.y = x +self.speed+2-j,y
-            return True
-        return False
+    # def moveRight(self,x,y,screen):
+    #     for j in range(1,self.speed+2):
+    #         is_move = 1
+    #         for i in range(1,self.speed+2-j+1 ):
+    #             if not (screen[x][y+i] == " " or screen[x][y+i] == "D"):
+    #                 is_move = 0
+    #         if is_move == 1:
+    #             break
+    #
+    #     if is_move == 1:
+    #         screen[x][y] = " "
+    #         screen[x][y+self.speed+2-j] = 'O'
+    #         self.x, self.y = x ,y+self.speed+2-j
+    #         return True
+    #     return False
+    #
+    # def moveLeft(self,x,y,screen):
+    #     for j in range(1,self.speed+2):
+    #         is_move = 1
+    #         for i in range(1,self.speed+2-j+1 ):
+    #             if not (screen[x][y-i] == " " or screen[x][y-i] == "D"):
+    #                 is_move = 0
+    #         if is_move == 1:
+    #             break
+    #
+    #     if is_move == 1:
+    #         screen[x][y] = " "
+    #         screen[x][y-self.speed-2+j] = 'O'
+    #         self.x, self.y = x ,y-self.speed-2+j
+    #         return True
+    #     return False
+    #
+    # def moveUp(self,x,y,screen):
+    #     for j in range(1,self.speed+2):
+    #         is_move = 1
+    #         for i in range(1,self.speed+2-j+1 ):
+    #             if not (screen[x-i][y] == " " or screen[x-i][y] == "D"):
+    #                 is_move = 0
+    #         if is_move == 1:
+    #             break
+    #
+    #     if is_move == 1:
+    #         screen[x][y] = " "
+    #         screen[x-self.speed-2+j][y] = 'O'
+    #         self.x, self.y = x-self.speed-2+j ,y
+    #         return True
+    #
+    # def moveDown(self,x,y,screen):
+    #     for j in range(1,self.speed+2):
+    #         is_move = 1
+    #         for i in range(1,self.speed+2-j+1 ):
+    #             if not (screen[x+i][y] == " " or screen[x+i][y] == "D"):
+    #                 is_move = 0
+    #         if is_move == 1:
+    #             break
+    #
+    #     if is_move == 1:
+    #         screen[x][y] = " "
+    #         screen[x+self.speed+2-j][y] = 'O'
+    #         self.x, self.y = x +self.speed+2-j,y
+    #         return True
+    #     return False
 
 
     # def moveRight(self,x,y,screen):
@@ -135,6 +139,46 @@ class Vehicle:
     #         self.x, self.y = x+1 ,y
     #         return True
     #     return False
+    #
+    # def moveRight(self,x,y,screen):
+    #     if screen[x][y+1] == " " or screen[x][y+1] == "D":
+    #         screen[x][y] = " "
+    #         screen[x][y+1] = 'O'
+    #         self.x, self.y = x ,y+1
+    #         return True
+    #     return False
+
+    def moveRight(self,x,y,screen):
+        if screen[x][y+1] != "X":
+            screen[x][y] = " "
+            screen[x][y+1] = 'O'
+            self.x, self.y = x ,y+1
+            return True
+        return False
+
+    def moveLeft(self,x,y,screen):
+        if screen[x][y-1] != "X":
+            screen[x][y] = " "
+            screen[x][y-1] = 'O'
+            self.x, self.y = x ,y-1
+            return True
+        return False
+
+    def moveUp(self,x,y,screen):
+        if screen[x-1][y] != "X":
+            screen[x][y] = " "
+            screen[x-1][y] = 'O'
+            self.x, self.y = x-1 ,y
+            return True
+        return False
+
+    def moveDown(self,x,y,screen):
+        if screen[x+1][y] != "X":
+            screen[x][y] = " "
+            screen[x+1][y] = 'O'
+            self.x, self.y = x+1 ,y
+            return True
+        return False
 
     def stayStill(self,x,y,screen):
         if screen[x][y] != "X":
@@ -327,36 +371,16 @@ class Vehicle:
                     self.reached_junction = False
                     self.path_travelled.append([self.x, self.y])
                     return
-
-    def print_utilities(self, utils, n, m):
-        for i in range(n):
-            for j in range(m):
-                print ("%.3f" %utils[(i,j)], end=" ")
-            print ("\n")
-
-    def get_actions(self, state, borders):
-        if state in self.destination or state in borders:
-            return []
-        return [(1,0), (0,1), (-1,0), (0,-1)]
-
-    def transition(self, state,action,borders):
-        if (state[0]+action[0],state[1]+action[1]) not in borders:
-            more_prob = (1, (state[0]+action[0],state[1]+action[1]))
-        else:
-            more_prob = (1, (state[0],state[1]))
-
-        return more_prob
-
     def find_max_utility_state(self,utilities,present_junction):
         max_vals = []
         maxm = -100000
-        if(utilities[(present_junction[0]-1, present_junction[1])] > maxm):
+        if utilities[(present_junction[0]-1, present_junction[1])] > maxm:
             maxm = utilities[(present_junction[0]-1, present_junction[1])]
-        if(utilities[(present_junction[0]+1, present_junction[1])] > maxm):
+        if utilities[(present_junction[0]+1, present_junction[1])] > maxm:
             maxm = utilities[(present_junction[0]+1, present_junction[1])]
-        if(utilities[(present_junction[0], present_junction[1]-1)] > maxm):
+        if utilities[(present_junction[0], present_junction[1]-1)] > maxm:
             maxm = utilities[(present_junction[0], present_junction[1]-1)]
-        if(utilities[(present_junction[0], present_junction[1]+1)] > maxm):
+        if utilities[(present_junction[0], present_junction[1]+1)] > maxm:
             maxm = utilities[(present_junction[0], present_junction[1]+1)]
 
         if utilities[(present_junction[0]-1, present_junction[1])] == maxm:
@@ -373,10 +397,62 @@ class Vehicle:
 
         return max_vals[random.randint(0,len(max_vals)-1)]
 
-    def value_iteration(self, n, m, borders):
+    def print_utilities(self, utils, n, m):
+        for i in range(n):
+            for j in range(m):
+                print ("%1f" %utils[(i,j)], end=" ")
+            print ("\n")
+
+    def get_actions(self, state, borders):
+        actions = []
+        if state in self.destination or state in borders:
+            return actions
+        if (state[0]+1,state[1]) not in borders:
+            actions.append([1,0])
+        if (state[0]-1,state[1]) not in borders:
+            actions.append([-1,0])
+        if (state[0],state[1]+1) not in borders:
+            actions.append([0,1])
+        if (state[0],state[1]-1) not in borders:
+            actions.append([0,-1])
+        return actions
+
+    def transition(self, state,action,borders):
+        if (state[0]+action[0],state[1]+action[1]) not in borders:
+            more_prob = (1, (state[0]+action[0],state[1]+action[1]))
+        else:
+            more_prob = (1, (state[0],state[1]))
+
+        return more_prob
+
+
+    def get_step_cost(self,state, action, traffic_flow, twoDJunctions, junction_roads):
+        dest_state = (state[0]+action[0],state[1]+action[1])
+        pres_junc = twoDJunctions[state]
+        dest_junc = twoDJunctions[dest_state]
+        pres_roads = junction_roads[pres_junc]
+        dest_roads = junction_roads[dest_junc]
+        common_road = []
+        for road in pres_roads:
+            if road in dest_roads:
+                common_road.append(road)
+
+        if traffic_flow[common_road[0]]==0:
+            return -0.2
+        if traffic_flow[common_road[0]]==1:
+            return -0.5
+        if traffic_flow[common_road[0]]==2:
+            return -0.6
+        if traffic_flow[common_road[0]]==3:
+            return -0.8
+        if traffic_flow[common_road[0]]==4:
+            return -0.9
+        else:
+            return -0.2*traffic_flow[common_road[0]]
+
+    def value_iteration(self, n, m, borders, traffic_flow, twoDJunctions, junction_roads):
         grid = self.grid
-        grid[5][10] = 10
-        self.destination = [(5,10)]
+        grid[self.destination[0][0]][self.destination[0][1]] = 100
         utilities = self.initial_utilities
         states = self.states
 
@@ -388,7 +464,8 @@ class Vehicle:
                 if self.get_actions(state, borders) != []:
                     for action in self.get_actions(state, borders):
                         trans = self.transition(state,action,borders)
-                        sum_ut = 0.0
+                        sum_ut = self.get_step_cost(state, action, traffic_flow, twoDJunctions, junction_roads)
+                        # sum_ut = -0.3
                         sum_ut += trans[0] * temp_utilities[trans[1]]
                         if maxm < sum_ut:
                             maxm = sum_ut
@@ -401,7 +478,12 @@ class Vehicle:
                     is_change = 1
 
             if not is_change:
+                for i in range(n):
+                    for j in range(m):
+                        utilities[(i,j)] = round(utilities[(i,j)],1)
                 best_move = self.find_max_utility_state(utilities, self.present_junction)
                 self.next_junction = best_move
                 self.utilities = utilities
+                # self.print_utilities(utilities, 11, 20)
+                # exit()
                 return best_move

@@ -13,7 +13,7 @@ class CentralServer:
         self.traffic_flow = {}
         self.junction_flow = {}
         self.vehicles_path = {}
-        self.MAX_VEHICLES = 20
+        self.MAX_VEHICLES = 50
         self.timer = 0
 
     def startSimulation(self):
@@ -65,9 +65,10 @@ class CentralServer:
             for vhcl in range(self.MAX_VEHICLES):
                 self.vehicles_path[vhcl].append([self.vehicles[vhcl].x,self.vehicles[vhcl].y])
                 if self.vehicles[vhcl].reached_junction:
-                    self.vehicles[vhcl].value_iteration(self.city.junc_wid,self.city.junc_len,self.city.borders)
+                    self.vehicles[vhcl].value_iteration(self.city.junc_wid,self.city.junc_len,self.city.borders, self.traffic_flow, self.city.TwoDJunctions, self.city.junction_roads)
                 self.vehicles[vhcl].traverseToJunctionVI(self.city.junctions,self.vehicles[vhcl].next_junction ,self.city.city_map)
 
+            # print self.traffic_flow
             if(inpt == 'q' or inpt == 'Q'):
                 exit()
 

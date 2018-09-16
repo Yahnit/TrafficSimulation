@@ -13,6 +13,7 @@ class City:
         self.roads = []
         self.junctions = []
         self.TwoDJunctions = {}
+        self.OneDRoads = {}
         self.junction_roads = {}
         self.road_junctions = {}
         self.timer = 0
@@ -37,7 +38,8 @@ class City:
         self.displayCity()
         self.mapRoadsToJunctions()
         self.mapJunctionsToRoads()
-        self.map1Dto2DJunctions()
+        self.map2Dto1DJunctions()
+        self.map2Dto1DRoads()
 
     def isAccomodate(self,x,y):
         if(self.city_map[x][y] == ' '):
@@ -64,21 +66,30 @@ class City:
 
         self.junctions = junctions
 
-    def map1Dto2DJunctions(self):
-        mapping = {}
+    def map2Dto1DJunctions(self):
+        junc_mapping = {}
         factor = self.length/8
         junctions = self.junctions
         for junc in range(len(junctions)):
             junction = (junc/factor, junc%factor)
-            mapping[junction] = junc
+            junc_mapping[junction] = junc
 
-        self.TwoDJunctions = mapping
+        self.TwoDJunctions = junc_mapping
 
     def findIndexOfRoad(self,road):
         for i in range(len(self.roads)):
             if(self.roads[i] == road):
                 return i
 
+    def map2Dto1DRoads(self):
+        road_mapping = {}
+        for i in range(len(self.roads)):
+            road = (self.roads[i][0],self.roads[i][1])
+            road_mapping[road] = i
+
+        self.OneDRoads = road_mapping
+
+    #OPTIMISE!
     def mapRoadsToJunctions(self):
         junction_roads = defaultdict(list)
         for i in range(len(self.junctions)):
