@@ -5,10 +5,10 @@ from collections import defaultdict
 
 class City:
     def __init__(self):
-        self.length = 122    #  8*15 + 2
-        self.width = 34      # 4*8 + 2
-        self.junc_len = self.length/8
-        self.junc_wid = self.width/4
+        self.length = 66   #  8*8 + 2
+        self.width = 18     # 4*4 + 2
+        self.junc_len = int(self.length/8)
+        self.junc_wid = int(self.width/4)
         self.city_map = ""
         self.roads = []
         self.junctions = []
@@ -22,8 +22,8 @@ class City:
     def makeCity(self):
         self.city_map = [[' ' for x in range(0,self.length)] for y in range(0,self.width)]
         borders = []
-        n = self.width/4
-        m = self.length/8
+        n = self.junc_wid
+        m = self.junc_len
         for i in range(n):
             borders.append((i,-1))
             borders.append((i,m))
@@ -67,16 +67,14 @@ class City:
             for j in range(4, self.length-4,8):
                 junctions.append([i,j])
 
-        # print(junctions)
-        # exit()
         self.junctions = junctions
 
     def map2Dto1DJunctions(self):
         junc_mapping = {}
-        factor = self.length/8
+        factor = int(self.length/8)
         junctions = self.junctions
         for junc in range(len(junctions)):
-            junction = (junc/factor, junc%factor)
+            junction = (int(junc/factor), int(junc%factor))
             junc_mapping[junction] = junc
 
         # print(junc_mapping)
@@ -145,21 +143,23 @@ class City:
         self.road_junctions = road_junctions
 
     def insertObstacles(self):
-    	for i in range(0,2):
-    		for j in range(0,self.length):
-    			self.city_map[i][j] = 'X'
+        # Top 2 and Bottom 2 lines
+        for i in range(0,2):
+        	for j in range(0,self.length):
+        		self.city_map[i][j] = 'X'
 
-    	for i in range(2,self.width-2):
-    		for j in range(0,4):
-    			self.city_map[i][j] = 'X'
+        for i in range(self.width-2,self.width):
+        	for j in range(0,self.length):
+        		self.city_map[i][j] = 'X'
 
-    	for i in range(2,self.width-2):
-    		for j in range(self.length-4,self.length):
-    			self.city_map[i][j] = 'X'
+        # Right and Left 4 lines
+        for i in range(2,self.width-2):
+        	for j in range(0,4):
+        		self.city_map[i][j] = 'X'
 
-    	for i in range(self.width-2,self.width):
-    		for j in range(0,self.length):
-    			self.city_map[i][j] = 'X'
+        for i in range(2,self.width-2):
+        	for j in range(self.length-4,self.length):
+        		self.city_map[i][j] = 'X'
 
         for i in range(2,self.width-2):
             if i%4==1 or i%4==0:
@@ -167,10 +167,12 @@ class City:
                     if j%8==3 or j%8==2 or j%8==1 or j%8==0 or j%8==7 or j%8==6:
                         self.city_map[i][j] = 'X'
 
-        self.city_map[6][20] = "D"
-        for i in range(6,8):
-            for j in range(20,22):
-                self.city_map[i][j] = 'D'
+        # dest_x = 1*4 + 2
+        # dest_y = (self.junc_len-1)*8 + 4
+        # self.city_map[dest_x][dest_y] = "D"
+        # for i in range(dest_x,dest_x+2):
+        #     for j in range(dest_y,dest_y+2):
+        #         self.city_map[i][j] = 'D'
 
         # self.city_map[2][12] = "O"
         # self.city_map[3][9] = "O"
